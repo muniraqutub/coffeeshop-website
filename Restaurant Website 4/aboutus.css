@@ -1,0 +1,158 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0;
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+ul {
+    list-style: none;
+}
+
+header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px 20px;
+    background-color: #252525;
+}
+
+.logo {
+    font-size: 24px; 
+    font-weight: bold;
+    color: #d4af37;
+    text-transform: uppercase;
+}
+
+nav ul {
+    display: flex;
+    gap: 24px;
+    margin: 0; 
+    padding: 0;
+    list-style: none; 
+}
+
+nav ul li a {
+    text-decoration: none; 
+    color: #e0e0e0; 
+    font-size: 16px; 
+    padding: 8px 16px; 
+    border-radius: 5px; 
+    transition: background 0.3s; 
+}
+nav ul li a:hover {
+    background: #d4af37; 
+    color: #121212; 
+}
+
+.gap {
+    position: relative;
+    top: 30px;
+}
+
+/* Banner Styles */
+.banner {
+    background: url('images/aboutus-banner.png') no-repeat center center/cover;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.banner h1 {
+    font-size: 45px;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Section Styles */
+.section {
+    padding: 32px 32px;
+    text-align: center;
+}
+
+.section h2 {
+    font-size: 40px; 
+    margin-bottom: 32px; 
+    background: linear-gradient(45deg, #d4af37, #f5bf57);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.about-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: justify;
+    font-size: 19.2px; 
+}
+
+/* Value Cards */
+.about-values {
+    display: flex;
+    justify-content: space-around;
+    gap: 32px; 
+    flex-wrap: wrap;
+    margin-top: 32px;
+}
+
+.value-card {
+    background-color: #252525;
+    border-radius: 10px;
+    padding: 32px; 
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease; /* Added transform transition */
+}
+
+.value-card h3 {
+    font-size: 24px; 
+    margin-bottom: 16px; 
+    color: #d4af37; /* Gold-like color */
+}
+
+.value-card p {
+    font-size: 16px; 
+    color: #e0e0e0; /* Light gray color */
+}
+/* Hover effect for value cards */
+.value-card:hover {
+    background-color: rgba(255, 246, 246, 0.76); /* Card background changes to white */
+    color: black; /* Text changes to black */
+    transform: translateY(-10px); /* Makes the card pop up */
+}
+
+.value-card:hover h3 {
+    color: #6b550d; /* Keep h3 in gold-like color */
+}
+
+.value-card:hover p {
+    color: #0c0b0b; /* Keep p text in light gray color */
+}
+/* Footer Styles */
+footer {
+    background: #121212;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 32px; 
+}
+
+footer p {
+    font-size: 16px; 
+    margin-bottom: 0;
+}
+

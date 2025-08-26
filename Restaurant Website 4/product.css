@@ -1,0 +1,167 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #222222;
+    color: #e0e0e0;
+}
+
+header {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    padding: 20px 20px;
+    background-color: #252525;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #d4af37;
+    text-transform: uppercase;
+}
+
+nav ul {
+    display: flex;
+    gap: 24px; 
+    margin: 0; 
+    padding: 0;
+    list-style: none; 
+}
+
+nav ul li a {
+    text-decoration: none; 
+    color: #e0e0e0; 
+    font-size: 16px; 
+    padding: 8px 16px; 
+    border-radius: 5px; 
+    transition: background 0.3s; 
+}
+
+nav ul li a:hover {
+    background: #d4af37; 
+    color: #121212; 
+}
+
+.banner {
+    background: url('images/dishes-banner.png') no-repeat center center/cover;
+    height: 190px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.banner h1 {
+    font-size: 45px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 1);
+}
+
+.section {
+    padding: 50px 32px;
+}
+
+.section h2 {
+    font-size: 40px;
+    margin-bottom: 32px;
+    text-align: center;
+    background: linear-gradient(45deg, #d4af37, #f5bf57);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.dish-category {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+}
+
+.dish-card {
+    background-color: #1b1b1b;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    padding: 24px;
+    text-align: center;
+    width: 250px;
+    transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.dish-card:hover {
+transform: scale(1.1);
+box-shadow: 0 0 15px rgba(224, 173, 6, 0.903), 0 0 30px rgba(245, 191, 87, 0.6);
+background-color: #2a2a2a;
+}
+
+
+.dish-card img {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.dish-card h3 {
+    font-size: 19px;
+    margin-bottom: 8px;
+    background: linear-gradient(45deg, #d4af37, #f5bf57);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.dish-card p {
+    color: #e0e0e0;
+    font-size: 14px;
+}
+
+.dish-card .price {
+    color: #d4af37;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.add-to-cart {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background-color: #d4af37;
+    border: none;
+    border-radius: 5px;
+    color: #1b1b1b;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-to-cart a {
+    text-decoration: none;
+    color: black;
+}
+
+.add-to-cart:hover {
+    background-color: #f5bf57;
+    transform: scale(1.05);
+}
+
+.add-to-cart:active {
+    background-color: #b3862f;
+}
+
+footer {
+    background: #121212;
+    color: #e0e0e0;
+    text-align: center;
+    padding: 32px;
+}
+
+footer p {
+    font-size: 16px;
+}

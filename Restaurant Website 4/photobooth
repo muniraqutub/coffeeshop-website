@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Polaroid Photo Booth</title>
+  <style>
+    :root{
+      --navy:#0E1627; /* background */
+      --mauve:#BD8E89; /* buttons */
+      --pink:#E5C5C1;  /* accents */
+      --blush:#F4E1E0; /* panels */
+      --prune:#7F6269; /* borders/text */
+      --white:#FFFFFF;
+      --shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color:var(--blush);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(189,142,137,.25), transparent 60%),
+        radial-gradient(1000px 600px at 110% 0%, rgba(229,197,193,.18), transparent 55%),
+        var(--navy);
+    }
+    header{
+      padding:24px; text-align:center;
+    }
+    h1{margin:0 0 8px;font-weight:800;letter-spacing:.5px;color:var(--pink)}
+    .sub{opacity:.85}
+
+    .app{
+      max-width:1100px; margin:0 auto 80px; padding:16px; display:grid; gap:16px;
+      grid-template-columns: 360px 1fr; align-items:start;
+    }
+
+    /* LEFT PANEL */
+    .panel{
+      background:rgba(244,225,224,.14);
+      border:1px solid rgba(229,197,193,.25);
+      border-radius:16px; padding:14px; position:sticky; top:16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+    .panel h2{margin:4px 8px 10px; font-size:18px; color:var(--pink)}
+
+    .group{border:1px dashed rgba(229,197,193,.25); border-radius:12px; padding:10px; margin:8px 0}
+    .group label{display:block; font-size:13px; opacity:.9; margin:6px 0 4px}
+    .row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+
+    select, input[type="text"], input[type="number"]{
+      width:100%; padding:10px 12px; border-radius:10px; border:1px solid var(--pink);
+      background:rgba(255,255,255,.08); color:#fff; outline:none;
+    }
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
+    .chip{
+      padding:8px 12px; border-radius:999px; cursor:pointer; font-size:13px; user-select:none;
+      background:var(--mauve); color:#fff; border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 6px 16px rgba(0,0,0,.25);
+    }
+    .chip.alt{background:var(--pink); color:#1b1b1b}
+    .chip.outline{background:transparent; color:var(--blush); border:1px solid var(--pink)}
+    .chip.active{outline:2px solid var(--pink)}
+
+    .btn{display:inline-flex; align-items:center; gap:8px; padding:11px 16px; border-radius:12px;border:0; cursor:pointer; font-weight:700; letter-spacing:.3px}
+    .btn.primary{background:var(--mauve); color:#fff}
+    .btn.secondary{background:transparent; color:var(--blush); border:1px solid var(--pink)}
+    .btn:disabled{opacity:.5; cursor:not-allowed}
+
+    .danger{color:#fff; background:#a44b4b}
+
+    /* RIGHT AREA */
+    .stage{
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(229,197,193,.25);
+      border-radius:16px; padding:16px; box-shadow: var(--shadow);
+    }
+
+    .toolbar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-bottom:10px}
+    .tool-left{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+
+    .live{
+      display:grid; grid-template-columns: 1fr; justify-items:center; gap:12px;
+      padding:8px; border-radius:12px; background:rgba(0,0,0,.15)
+    }
+    video{width:min(720px,100%); aspect-ratio:4/3; background:#000; border-radius:14px; border:5px solid var(--mauve); box-shadow:0 10px 30px rgba(0,0,0,.45)}
+
+    /* POLAROID CARD */
+    .polaroid{
+      display:inline-block; background:var(--white); color:#222; padding:14px 14px 54px; border-radius:10px; position:relative;
+      border:6px solid var(--prune); width:min(640px, 95%); box-shadow: 0 22px 50px rgba(0,0,0,.5);
+      transform: rotate(-.5deg);
+    }
+    .polaroid .photo{width:100%; border-radius:6px; display:block}
+    .caption{
+      position:absolute; left:0; right:0; bottom:10px; text-align:center; font-family: "Courier New", ui-monospace, monospace; font-weight:700;
+      color:var(--prune); background:var(--blush); margin:0 14px; padding:6px 8px; border-radius:8px; border:1px solid var(--pink)
+    }
+
+    /* STRIP GALLERY */
+    .strip-preview{display:flex; gap:16px; flex-wrap:wrap; justify-content:center; margin-top:12px}
+    .strip-canvas{background:var(--white); border:6px solid var(--prune); border-radius:10px; box-shadow: 0 18px 40px rgba(0,0,0,.5)}
+
+    .countdown{position:absolute; inset:0; display:grid; place-items:center; pointer-events:none}
+    .countdown span{font-size:96px; font-weight:900; color:#fff; text-shadow:0 8px 30px rgba(0,0,0,.8)}
+
+    footer{padding:24px; text-align:center; opacity:.8}
+
+    @media (max-width: 920px){
+      .app{grid-template-columns:1fr}
+      .panel{position:static}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>✨ Polaroid Photo Booth</h1>
+    <div class="sub">Navy · Mauve · Pink · Blush · Prune — interactive, camera-ready, download-friendly</div>
+  </header>
+
+  <main class="app">
+    <aside class="panel" aria-label="Controls">
+      <h2>Controls</h2>
+
+      <div class="group">
+        <label>Source</label>
+        <div class="row">
+          <button id="btnStart" class="btn primary">Start Camera</button>
+          <button id="btnStop" class="btn secondary">Stop</button>
+          <button id="btnUpload" class="btn secondary">Upload Photo</button>
+          <input id="fileInput" type="file" accept="image/*" hidden />
+        </div>
+      </div>
+
+      <div class="group">
+        <label>Filter</label>
+        <select id="filterSel">
+          <option value="none">None</option>
+          <option value="grayscale(100%)">Grayscale</option>
+          <option value="sepia(100%)">Sepia</option>
+          <option value="contrast(160%) saturate(110%)">Contrast+</option>
+          <option value="brightness(110%) contrast(120%) saturate(120%)">Bright Pop</option>
+          <option value="sepia(45%) contrast(120%) saturate(120%) brightness(105%)">Vintage</option>
+          <option value="hue-rotate(330deg) saturate(120%) contrast(115%)">Rosy</option>
+        </select>
+      </div>
+
+      <div class="group">
+        <label>Frame Accent</label>
+        <div id="frameChips" class="chips"></div>
+      </div>
+
+      <div class="group">
+        <label>Caption</label>
+        <input id="captionInput" type="text" placeholder="Write a cute caption…" maxlength="40" />
+      </div>
+
+      <div class="group">
+        <label>Mode</label>
+        <div class="chips">
+          <span class="chip alt active" id="modeSingle">Single Polaroid</span>
+          <span class="chip outline" id="modeStrip">Photo Strip</span>
+        </div>
+      </div>
+
+      <div id="stripOptions" class="group" style="display:none">
+        <label>Strip Settings</label>
+        <div class="row">
+          <label>Shots</label>
+          <select id="stripCount">
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+          </select>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label>Interval (sec)</label>
+          <select id="stripInterval">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="row">
+          <button id="btnCapture" class="btn primary">📸 Capture</button>
+          <button id="btnDownload" class="btn secondary">⬇️ Download</button>
+          <button id="btnClear" class="btn danger">Clear</button>
+        </div>
+      </div>
+
+      <div style="font-size:12px; opacity:.85; margin-top:6px">Tip: If camera is blocked, use <b>Upload Photo</b>.</div>
+    </aside>
+
+    <section class="stage" aria-live="polite">
+      <div class="toolbar">
+        <div class="tool-left">
+          <span>Live Preview</span>
+        </div>
+        <div id="status" class="sub">Ready</div>
+      </div>
+
+      <div class="live" id="liveWrap" style="position:relative">
+        <video id="video" playsinline autoplay muted></video>
+        <div class="countdown" id="countdown" hidden><span>3</span></div>
+      </div>
+
+      <div style="display:grid; place-items:center; margin-top:14px">
+        <!-- Single Polaroid -->
+        <figure id="polaroid" class="polaroid" aria-label="Polaroid preview" style="display:block">
+          <img id="photo" class="photo" alt="Captured" />
+          <figcaption id="cap" class="caption">Your Polaroid Shot</figcaption>
+        </figure>
+
+        <!-- Strip Preview(s) -->
+        <div id="stripPreview" class="strip-preview" style="display:none"></div>
+      </div>
+
+      <canvas id="work" width="1600" height="1200" style="display:none"></canvas>
+    </section>
+  </main>
+
+  <footer>Made with ❤️ for your portfolio · Works offline · No libraries</footer>
+
+  <script>
+  (function(){
+    const colors = [
+      {name:'Mauve', val: getCSS('--mauve')},
+      {name:'Pink', val: getCSS('--pink')},
+      {name:'Blush', val: getCSS('--blush')},
+      {name:'Prune', val: getCSS('--prune')},
+      {name:'White', val: '#ffffff'}
+    ];
+
+    const els = {
+      video: qs('#video'),
+      status: qs('#status'),
+      start: qs('#btnStart'),
+      stop: qs('#btnStop'),
+      uploadBtn: qs('#btnUpload'),
+      fileInput: qs('#fileInput'),
+      filterSel: qs('#filterSel'),
+      frameChips: qs('#frameChips'),
+      captionInput: qs('#captionInput'),
+      cap: qs('#cap'),
+      photo: qs('#photo'),
+      polaroid: qs('#polaroid'),
+      work: qs('#work'),
+      countdown: qs('#countdown'),
+      modeSingle: qs('#modeSingle'),
+      modeStrip: qs('#modeStrip'),
+      stripOptions: qs('#stripOptions'),
+      stripCount: qs('#stripCount'),
+      stripInterval: qs('#stripInterval'),
+      stripPreview: qs('#stripPreview'),
+      btnCapture: qs('#btnCapture'),
+      btnDownload: qs('#btnDownload'),
+      btnClear: qs('#btnClear'),
+    };
+
+    let stream = null;
+    let currentFilter = 'none';
+    let frameAccent = getCSS('--prune');
+    let mode = 'single'; // or 'strip'
+    let lastStripCanvas = null; // for download
+
+    // Init frame chips
+    colors.forEach((c,i)=>{
+      const chip = document.createElement('span');
+      chip.className = 'chip' + (i===3? ' active':'');
+      chip.style.background = c.name==='White' ? 'transparent' : c.val;
+      chip.style.color = c.name==='White' ? '#111' : '#fff';
+      chip.style.border = c.name==='White' ? '1px solid #ddd' : chip.style.border;
+      chip.textContent = c.name;
+      chip.addEventListener('click', ()=>{
+        qsa('#frameChips .chip').forEach(x=>x.classList.remove('active'));
+        chip.classList.add('active');
+        frameAccent = c.val;
+        stylePolaroidBorder();
+      });
+      els.frameChips.appendChild(chip);
+    });
+
+    function stylePolaroidBorder(){
+      els.polaroid.style.borderColor = frameAccent;
+      els.cap.style.background = getCSS('--blush');
+      els.cap.style.color = getCSS('--prune');
+      els.polaroid.style.boxShadow = '0 22px 50px rgba(0,0,0,.55)';
+    }
+    stylePolaroidBorder();
+
+    // Camera controls
+    els.start.onclick = async () => {
+      try{
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio:false });
+        els.video.srcObject = stream; setStatus('Camera started');
+      }catch(e){ setStatus('Camera error: ' + e.message); }
+    };
+    els.stop.onclick = () => { stopCamera(); };
+
+    function stopCamera(){
+      if(stream){ stream.getTracks().forEach(t=>t.stop()); stream = null; }
+      els.video.srcObject = null; setStatus('Camera stopped');
+    }
+
+    // Upload fallback
+    els.uploadBtn.onclick = ()=> els.fileInput.click();
+    els.fileInput.onchange = (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{ showOnPolaroid(reader.result); setStatus('Image loaded'); };
+      reader.readAsDataURL(file);
+    };
+
+    // Filters
+    els.filterSel.oninput = () => {
+      currentFilter = els.filterSel.value;
+      els.video.style.filter = currentFilter;
+      els.photo.style.filter = currentFilter;
+    };
+
+    // Modes
+    els.modeSingle.onclick = () => setMode('single');
+    els.modeStrip.onclick = () => setMode('strip');
+
+    function setMode(m){
+      mode = m;
+      qsa('.chips .chip').forEach(x=>x.classList.remove('active'));
+      (m==='single'? els.modeSingle: els.modeStrip).classList.add('active');
+      if(m==='single'){
+        els.stripOptions.style.display = 'none';
+        els.polaroid.style.display = 'block';
+        els.stripPreview.style.display = 'none';
+      } else {
+        els.stripOptions.style.display = 'block';
+        els.polaroid.style.display = 'none';
+        els.stripPreview.style.display = 'flex';
+      }
+    }
+
+    // Caption
+    els.captionInput.oninput = ()=>{
+      els.cap.textContent = els.captionInput.value || 'Your Polaroid Shot';
+    }
+
+    // Capture logic
+    els.btnCapture.onclick = async () => {
+      if(mode==='single') return captureSingle();
+      else return captureStrip();
+    };
+
+    els.btnDownload.onclick = () => {
+      if(mode==='single'){
+        downloadElementAsPNG(renderSingleToCanvas());
+      } else if(lastStripCanvas){
+        downloadCanvas(lastStripCanvas, 'polaroid-strip.png');
+      } else {
+        alert('Take a strip first!');
+      }
+    };
+
+    els.btnClear.onclick = () => {
+      els.photo.src = '';
+      els.captionInput.value = '';
+      els.cap.textContent = 'Your Polaroid Shot';
+      els.stripPreview.innerHTML = '';
+      lastStripCanvas = null;
+      setStatus('Cleared');
+    };
+
+    function captureSingle(){
+      const frame = grabFrame();
+      if(!frame){ alert('No camera or image loaded.'); return; }
+      showOnPolaroid(frame);
+      setStatus('Captured single');
+    }
+
+    async function captureStrip(){
+      const count = parseInt(els.stripCount.value,10) || 4;
+      const interval = (parseInt(els.stripInterval.value,10) || 2) * 1000;
+      els.stripPreview.innerHTML = '';
+
+      const shots = [];
+      for(let i=0;i<count;i++){
+        await runCountdown(3);
+        const frame = grabFrame();
+        if(!frame){ alert('No camera/image. Start camera or upload.'); return; }
+        shots.push(frame);
+        setStatus(`Shot ${i+1}/${count}`);
+        if(i < count-1) await sleep(interval);
+      }
+
+      // Compose vertical strip canvas with polaroid frames
+      const strip = composeStrip(shots);
+      lastStripCanvas = strip;
+
+      // Show preview (fit to width)
+      const preview = document.createElement('canvas');
+      const scale = Math.min(1, 340 / strip.width); // keep readable at smaller sizes
+      preview.width = Math.round(strip.width * scale);
+      preview.height = Math.round(strip.height * scale);
+      const pctx = preview.getContext('2d');
+      pctx.drawImage(strip, 0, 0, preview.width, preview.height);
+      preview.className = 'strip-canvas';
+
+      els.stripPreview.innerHTML = '';
+      els.stripPreview.appendChild(preview);
+      setStatus('Strip ready — download when you like');
+    }
+
+    // Helpers
+    function grabFrame(){
+      // Source can be video (live) or img (uploaded)
+      const w = 800, h = 600; // base frame size 4:3
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h; const ctx = c.getContext('2d');
+      ctx.filter = currentFilter;
+
+      if(els.video.srcObject){
+        ctx.drawImage(els.video, 0, 0, w, h);
+      } else if(els.photo.src){
+        // Draw uploaded image fitting to cover
+        const img = els.photo;
+        const r = coverRect(img.naturalWidth, img.naturalHeight, w, h);
+        ctx.drawImage(img, r.sx, r.sy, r.sw, r.sh, 0, 0, w, h);
+      } else {
+        return null;
+      }
+      return c.toDataURL('image/png');
+    }
+
+    function showOnPolaroid(dataUrl){
+      els.photo.src = dataUrl;
+    }
+
+    function coverRect(srcW, srcH, dstW, dstH){
+      const srcRatio = srcW/srcH; const dstRatio = dstW/dstH;
+      let sw, sh, sx, sy;
+      if(srcRatio > dstRatio){ // source wider
+        sh = srcH; sw = Math.round(dstRatio * sh); sx = Math.round((srcW - sw)/2); sy = 0;
+      }else{ // source taller
+        sw = srcW; sh = Math.round(sw / dstRatio); sx = 0; sy = Math.round((srcH - sh)/2);
+      }
+      return {sx,sy,sw,sh};
+    }
+
+    function renderSingleToCanvas(){
+      // Render current polaroid to an offscreen canvas at nice resolution
+      const W = 1200, H = 1400; // overall card
+      const photoW = W - 2*80; // margins inside
+      const photoH = Math.round(photoW * 3/4);
+
+      const c = document.createElement('canvas');
+      c.width = W; c.height = H; const ctx = c.getContext('2d');
+
+      // Card background & border
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,W,H);
+      ctx.lineWidth = 24; ctx.strokeStyle = frameAccent; ctx.strokeRect(12,12,W-24,H-24);
+
+      // Photo
+      const img = new Image(); img.src = els.photo.src || '';
+      // draw synchronously if cached
+      return drawWhenReady(img, ()=>{
+        ctx.save();
+        roundRect(ctx, 80, 80, photoW, photoH, 16); ctx.clip();
+        // fit image as cover
+        if(img.width && img.height){
+          const r = coverRect(img.width, img.height, photoW, photoH);
+          // apply filter approximation by drawing to temp canvas
+          const t = document.createElement('canvas'); t.width = r.sw; t.height = r.sh; const tctx = t.getContext('2d');
+          tctx.filter = currentFilter; tctx.drawImage(img, r.sx, r.sy, r.sw, r.sh, 0, 0, r.sw, r.sh);
+          ctx.drawImage(t, 0,0, r.sw, r.sh, 80, 80, photoW, photoH);
+        }
+        ctx.restore();
+
+        // Caption bar
+        const cap = els.captionInput.value || 'Your Polaroid Shot';
+        ctx.fillStyle = getCSS('--blush');
+        ctx.strokeStyle = getCSS('--pink');
+        ctx.lineWidth = 3;
+        const capX = 70, capY = 80 + photoH + 26, capW = W - 140, capH = 64;
+        roundRect(ctx, capX, capY, capW, capH, 10, true, true);
+
+        ctx.fillStyle = getCSS('--prune');
+        ctx.font = '700 32px Courier New, monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(cap, W/2, capY + capH/2);
+
+        return c; // done
+      });
+    }
+
+    function composeStrip(shots){
+      // Create a vertical strip with multiple polaroid cards stacked
+      const per = shots.length; const padding = 30; // between cards
+      const cardW = 700, cardH = 820; // single card size in strip
+      const W = cardW + 40; // outer border
+      const H = per * cardH + (per-1) * padding + 40;
+      const c = document.createElement('canvas'); c.width = W; c.height = H; const ctx = c.getContext('2d');
+
+      // background
+      ctx.fillStyle = '#eee'; ctx.fillRect(0,0,W,H);
+
+      let y = 20;
+      shots.forEach((dataUrl, idx)=>{
+        // draw each polaroid card
+        const img = new Image(); img.src = dataUrl;
+        // synchronous chain via drawWhenReady
+        const segment = drawWhenReady(img, ()=>{
+          // card base
+          ctx.save();
+          ctx.fillStyle = '#fff';
+          ctx.strokeStyle = frameAccent; ctx.lineWidth = 14;
+          roundRect(ctx, 20, y, cardW, cardH, 18, true, true);
+          // inner photo
+          const innerX = 20+50, innerY = y+50, innerW = cardW-100, innerH = Math.round((cardW-100)*3/4);
+          ctx.save(); roundRect(ctx, innerX, innerY, innerW, innerH, 12); ctx.clip();
+          const r = coverRect(img.width, img.height, innerW, innerH);
+          const t = document.createElement('canvas'); t.width = r.sw; t.height = r.sh; const tctx = t.getContext('2d');
+          tctx.filter = currentFilter; tctx.drawImage(img, r.sx, r.sy, r.sw, r.sh, 0, 0, r.sw, r.sh);
+          ctx.drawImage(t, 0,0, r.sw, r.sh, innerX, innerY, innerW, innerH);
+          ctx.restore();
+          // caption
+          const cap = (els.captionInput.value || '').trim();
+          if(cap){
+            const capX = innerX - 10, capY = innerY + innerH + 26, capW = innerW + 20, capH = 56;
+            ctx.fillStyle = getCSS('--blush');
+            ctx.strokeStyle = getCSS('--pink'); ctx.lineWidth = 3;
+            roundRect(ctx, capX, capY, capW, capH, 10, true, true);
+            ctx.fillStyle = getCSS('--prune');
+            ctx.font = '700 26px Courier New, monospace';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(cap, 20 + cardW/2, capY + capH/2);
+          }
+          ctx.restore();
+          y += cardH + padding;
+          return true;
+        });
+      });
+      return c;
+    }
+
+    function drawWhenReady(img, draw){
+      if(img.complete && img.naturalWidth){ return draw(); }
+      // Fallback sync-ish: this function is called per image; ensure draw happens after load
+      img.onload = ()=> draw();
+      return img; // caller should handle returning the canvas reference separately when needed
+    }
+
+    function downloadElementAsPNG(canvasOrImg){
+      if(canvasOrImg instanceof HTMLCanvasElement){
+        downloadCanvas(canvasOrImg, 'polaroid.png');
+      } else if(els.photo.src){
+        // If we only have the displayed element, render to canvas
+        const c = renderSingleToCanvas();
+        if(c instanceof HTMLCanvasElement) downloadCanvas(c, 'polaroid.png');
+      } else {
+        alert('Nothing to download yet.');
+      }
+    }
+
+    function downloadCanvas(c, filename){
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = c.toDataURL('image/png');
+      link.click();
+    }
+
+    function setStatus(msg){ els.status.textContent = msg; }
+    function qs(s){ return document.querySelector(s); }
+    function qsa(s){ return Array.from(document.querySelectorAll(s)); }
+    function getCSS(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+    async function runCountdown(n){
+      els.countdown.hidden = false; const span = els.countdown.querySelector('span');
+      for(let i=n;i>0;i--){ span.textContent = i; await sleep(800); }
+      els.countdown.hidden = true;
+    }
+
+    // Set default preview placeholder (blank)
+    els.photo.alt = 'Your photo will appear here';
+
+  })();
+  </script>
+</body>
+</html>
