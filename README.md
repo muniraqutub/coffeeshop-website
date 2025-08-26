@@ -1,2 +1,2 @@
-# coffeeshop-website
-Golden Bean Coffee House is a responsive multi-page website with a Java Swing launcher. Built using OOP, Swing GUI, events, file handling, and exception handling, it opens in Chrome. Pages include Home, Menu (flip cards), About, Checkout (cart), and Reviews. Features CSS styling, JS sliders, animations, and responsive design.
+# Restaurant-website
+Black Flame Kitchen is a sleek, responsive restaurant website in a premium black & gold theme. Built with HTML & CSS, it features engaging pages like Home, About Us, Dishes, Cart, Checkout, and Thank You—delivering a stylish, user-friendly dining experience online.
